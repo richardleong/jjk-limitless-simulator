@@ -1,0 +1,39 @@
+# --- Build Artifacts ---
+build/
+bin/
+out/
+obj/
+
+# --- IDE & System Files ---
+.vs/
+.vscode/
+*.sln
+*.vcxproj
+*.user
+.DS_Store
+
+# --- CMake Generated ---
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# --- Compiled Binaries & Debug ---
+*.exe
+*.out
+*.app
+*.pdb
+*.ilk
+*.dwo
+
+# --- Libraries & Objects ---
+*.lib
+*.a
+*.dll
+*.so
+*.dylib
+*.o
+*.obj
+
+# --- Project Specific ---
+SFML/
