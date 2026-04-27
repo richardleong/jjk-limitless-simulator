@@ -119,3 +119,7 @@ Screen shake:     cameraOffset = random(-intensity, intensity) each frame
                   intensity *= 0.9f each frame (decay)
 Glow:             window.draw(shape, sf::BlendAdd)
 ================================================================
+
+## Known Improvements
+- Refactor ability systems into dedicated classes (AbilitySystem, PurpleAbility) 
+  to reduce main() complexity — currently ~400 lines

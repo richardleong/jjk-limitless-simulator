@@ -89,3 +89,22 @@ void ParticleSystem::applyExpandingShockwave(sf::Vector2f origin, float currentR
         p.velocity.y += randFloat(-80.f, 80.f);
     }
 }
+
+void ParticleSystem::killInRadius(sf::Vector2f origin, float radius)
+{
+    for (auto& p : particles)
+    {
+        float dx = p.position.x - origin.x;
+        float dy = p.position.y - origin.y;
+        float distance = std::sqrt(dx * dx + dy * dy);
+        if (distance < radius)
+        {
+            // compress inward before deletion — pulls toward centre briefly
+            float nx = dx / (distance + 1.f);
+            float ny = dy / (distance + 1.f);
+            p.velocity.x -= nx * 300.f;
+            p.velocity.y -= ny * 300.f;
+            p.lifetime = std::min(p.lifetime, 0.1f); // force fast fade
+        }
+    }
+}
