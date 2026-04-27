@@ -46,7 +46,6 @@ class PurpleAbility : public Ability {
     sf::CircleShape m_purpleSphere;
 
     bool m_spacePrev = false;
-    bool m_middlePrev = false;
 
 public:
     PurpleAbility(GameWorld& world);

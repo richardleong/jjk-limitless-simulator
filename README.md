@@ -1,153 +1,130 @@
-================================================================
-PROJECT 2 — GOJO'S LIMITLESS TECHNIQUES
-Real-Time Simulation | C++ + SFML 3.1.0
-================================================================
+# JJK Limitless Simulator
 
-LAYER 1 — World + Gojo Setup
-------------------------------
-[ ] Dark background with subtle grid (void aesthetic)
-[ ] Gojo as white glowing circle placeholder
-[ ] WASD movement with delta time
-[ ] Mouse cursor visible as crosshair/aim point
-[ ] Window 1280x720
+A real-time physics simulation of Satoru Gojo's **Limitless** cursed techniques from Jujutsu Kaisen, built in **C++17** with **SFML 3.1.0**. Each ability is grounded in real physics — inverse-square force fields, impulse-based collision resolution, and exponential falloff curves.
 
-LAYER 2 — Particle System
----------------------------
-[ ] Particle class: position, velocity, colour, lifetime, size
-[ ] Spawn 300 debris particles at random positions
-[ ] Particles drift slowly with slight random velocity
-[ ] Particles fade out when lifetime expires, respawn
-[ ] Draw with additive blending for glow effect
+> This is Project 2 of a self-directed C++ learning portfolio, built to demonstrate real-time simulation, game architecture, and physics programming.
 
-LAYER 3 — Blue (Attraction)
------------------------------
-[ ] Hold Q to activate Blue
-[ ] While held: apply attraction force to all particles toward mouse cursor
-[ ] Force formula: F = strength / distance² (like gravity)
-[ ] Force capped at max value so particles don't teleport
-[ ] Visual: blue pulsing ring at cursor while held
-[ ] Visual: particles tint blue when pulled
-[ ] Particles that reach cursor orbit it briefly then get destroyed
+---
 
-LAYER 4 — Red (Repulsion)
----------------------------
-[ ] Press E to activate Red (instant shockwave, not held)
-[ ] Apply explosive outward force from mouse cursor
-[ ] Force formula: F = strength / distance² but outward
-[ ] Particles near cursor get obliterated (fade out instantly)
-[ ] Visual: red expanding ring from cursor on activation
-[ ] Visual: screen shake proportional to nearby particles hit
-[ ] Particles that hit window edge bounce or disappear
+## Abilities
 
-LAYER 5 — Hollow Purple (Beam)
---------------------------------
-[ ] Press Space to fire Hollow Purple
-[ ] Beam fires horizontally from Gojo position across screen
-[ ] Beam has width — anything within beam height gets erased
-[ ] Erasure: particles touched by beam explode into smaller fragments
-[ ] Visual: thick purple beam with additive glow
-[ ] Visual: beam appears for 0.5s then fades
-[ ] Visual: heavy screen shake on activation
-[ ] Cooldown: 3 seconds between uses
+### Blue — Cursed Technique Lapse
+Hold `Q` or `Left Click` to activate. Creates a gravitational singularity at the cursor — all particles and enemies are pulled inward using an inverse-square attraction force.
 
-LAYER 6 — Enemies
--------------------
-[ ] Enemy class: position, size, colour (cursed spirit aesthetic)
-[ ] Spawn 10-15 enemies at random positions
-[ ] Enemies float with very slight random drift (not chasing)
-[ ] Enemies react to abilities:
-    - Blue: pulled toward cursor like particles
-    - Red: thrown outward, destroyed if hitting wall
-    - Purple: instantly erased if in beam path
-[ ] Visual: enemies glow red/purple, distinct from particles
-[ ] On death: burst into particles (reuse particle system)
+```
+F = strength / (distance² + ε)
+```
 
-LAYER 7 — Glow + Visual Polish
----------------------------------
-[ ] Additive blending on all ability VFX
-[ ] Gojo glows white — layered circles with decreasing opacity
-[ ] Blue ability: blue vignette on screen edges while held
-[ ] Red ability: red flash on screen for 0.1s on activation  
-[ ] Purple beam: purple bloom that fills screen briefly
-[ ] Particles leave motion trails (ghost previous position)
+The epsilon term prevents force singularities at zero distance, producing smooth and stable behaviour even at close range.
 
-LAYER 8 — Screen Shake
-------------------------
-[ ] ScreenShake class: intensity, duration, decay
-[ ] Camera offset applied to all draw calls
-[ ] Blue: subtle shake while held
-[ ] Red: strong shake on activation
-[ ] Purple: violent shake for 0.5s
+### Red — Cursed Technique Reversal
+Press `E` or `Right Click` to activate. Charges visibly before detonating — Red orb grows during charge, then releases an explosive shockwave with exponential radial falloff. The expanding shockwave ring is a functional physics collider, pushing particles outward as it passes through them.
 
-LAYER 9 — Infinity Passive (BONUS)
-------------------------------------
-[ ] Debris approaching within 80px of Gojo slows exponentially
-[ ] velocity *= (distance / minDistance) each frame
-[ ] Objects never fully reach Gojo — Zeno's paradox in code
-[ ] Visual: faint white ring around Gojo showing infinity radius
+```
+F = strength × e^(−distance × falloff)
+```
 
-LAYER 10 — Sprites (LAST)
----------------------------
-[ ] Load Gojo sprite sheet from assets/
-[ ] Animation states: idle, blue_cast, red_cast, purple_cast
-[ ] Replace placeholder circle with sprite
-[ ] Replace ability VFX placeholders with sprite animations
-[ ] Enemies get cursed spirit sprites
+Different enemy types respond differently: Anchor resists knockback, Blink gets stunned, Weak enemies are instantly destroyed.
 
-================================================================
-COMMIT STRATEGY
-================================================================
-feat: Layer 1 - world setup and Gojo WASD movement
-feat: Layer 2 - particle system with additive blending
-feat: Layer 3 - Blue attraction force field
-feat: Layer 4 - Red repulsion shockwave
-feat: Layer 5 - Hollow Purple beam and erasure
-feat: Layer 6 - enemy entities and ability reactions
-feat: Layer 7 - glow effects and visual polish
-feat: Layer 8 - screen shake system
-feat: Layer 9 - Infinity passive defence mechanic
-feat: Layer 10 - sprite integration
+### Hollow Purple
+Hold `Space` or `Middle Click` to activate. A six-stage cinematic sequence:
 
-================================================================
-PHYSICS REFERENCE
-================================================================
-Blue attraction:  F = strength / distance²  (inward)
-Red repulsion:    F = strength / distance²  (outward)
-Purple erasure:   if abs(particle.y - beam.y) < beamWidth/2 → destroy
-Infinity:         velocity *= (distance / minRadius) when distance < minRadius
-Screen shake:     cameraOffset = random(-intensity, intensity) each frame
-                  intensity *= 0.9f each frame (decay)
-Glow:             window.draw(shape, sf::BlendAdd)
-================================================================
+1. **Blue orb** materialises and orbits
+2. **Red orb** appears on the opposite side, both orbit the merge point
+3. **Collision phase** — orbs spiral inward, shockwave rings pulse at the collision point
+4. **Screen flash** — purple overlay floods the screen
+5. **Pause** — Purple sphere holds position, pulsating with chaotic energy
+6. **Travel** — sphere fires toward the locked aim point, erasing everything in its path
 
-## Layout
-src/
-├── main.cpp
-├── core/                     # engine‑ish utilities
-│   ├── Constants.h
-│   └── Utils.h / .cpp
-├── gameplay/                 # in‑world entities & their managers
-│   ├── Particle.h / .cpp
-│   ├── ParticleSystem.h / .cpp
-│   ├── Enemy.h / .cpp        (future)
-│   └── EnemyManager.h / .cpp (future)
-├── abilities/                # player abilities
-│   ├── Ability.h
-│   ├── BlueAbility.h / .cpp
-│   ├── RedAbility.h / .cpp
-│   └── PurpleAbility.h / .cpp
-└── systems/                  # world‑level services
-    ├── GameWorld.h / .cpp
-    └── ScreenShake.h / .cpp
+5-second cooldown. Cancels with no cooldown if released before the collision phase.
+
+---
 
 ## Enemies
-Enemy Type	Shape	Colour	Behaviour
-Weak	Hexagon (6 sides)	Dark red	Jitters randomly, dies easily
-Basic	Pentagon (5 sides)	Red	Drifts toward Gojo
-Anchor	Octagon (8 sides) + outline	Dark purple, purple glow ring	Resists Blue, circles the map
-Blink	Diamond (4 sides)	Yellow, flickering alpha	Teleports in bursts
 
+| Type | Shape | Behaviour |
+|---|---|---|
+| Weak | Hexagon | Jitters randomly, dies easily to all abilities |
+| Basic | Pentagon | Drifts toward Gojo, requires sustained Blue or direct Red hit |
+| Anchor | Octagon | Circles the map, heavily resists Blue and Red knockback |
+| Blink | Diamond | Dashes toward Gojo in bursts, disrupted and stunned by Red |
+
+All enemies have health bars and differentiated responses to each ability.
+
+---
+
+## Architecture
+
+```
+src/
+├── main.cpp                      # window, input, game loop
+├── core/
+│   ├── Constants.h               # window dimensions, tuning values
+│   └── Utils.h / .cpp            # randFloat, force helper functions
+├── gameplay/
+│   ├── Particle.h / .cpp         # individual particle with lifetime and glow
+│   ├── ParticleSystem.h / .cpp   # manages 300 particles, exposes force API
+│   ├── Enemy.h / .cpp            # enemy entity with per-type AI and visuals
+│   └── EnemyManager.h / .cpp     # spawning, updating, ability interaction hooks
+├── abilities/
+│   ├── Ability.h                 # abstract base class
+│   ├── BlueAbility.h / .cpp      # attraction field
+│   ├── RedAbility.h / .cpp       # repulsion shockwave
+│   └── PurpleAbility.h / .cpp    # 6-stage cinematic ability with state machine
+└── systems/
+    ├── GameWorld.h / .cpp        # orchestration layer — owns all subsystems
+    └── ScreenShake.h / .cpp      # camera offset with intensity decay
+```
+
+Abilities communicate with the world through `GameWorld` — they never access `ParticleSystem` or `EnemyManager` directly. This keeps the ability layer decoupled from the simulation layer.
+
+---
+
+## Physics Reference
+
+| System | Formula |
+|---|---|
+| Blue attraction | `F = strength / (d² + ε)` |
+| Red repulsion | `F = strength × exp(−d × falloff)` |
+| Expanding shockwave | particles in ring front `[prev_r, curr_r]` per frame |
+| Screen shake | `offset = rand(±intensity)`, `intensity *= 0.9` per frame |
+| Additive glow | `window.draw(shape, sf::BlendAdd)` |
+| Particle fade | `alpha = (lifetime / maxLifetime) × 255` |
+
+---
+
+## Building
+
+SFML is included in the repository under `SFML/` — no separate installation required.
+
+```bash
+git clone https://github.com/richardleong/jjk-limitless-simulator.git
+cd jjk-limitless-simulator
+mkdir build && cd build
+cmake ..
+cmake --build .
+```
+
+> Requires CMake 3.22+ and a C++17 compatible compiler. MSVC recommended on Windows.
+
+---
+
+## Controls
+
+| Input | Action |
+|---|---|
+| `WASD` | Move Gojo |
+| `Q` / Left Click | Blue — hold to attract |
+| `E` / Right Click | Red — press to charge and detonate |
+| `Space` / Middle Click | Purple — hold to begin sequence |
+| Mouse | Aim point for all abilities |
+
+---
 
 ## Known Improvements
-- Refactor ability systems into dedicated classes (AbilitySystem, PurpleAbility) 
-  to reduce main() complexity — currently ~400 lines
+
+- Sprite integration — replace placeholder shapes with Gojo and cursed spirit sprites
+- Infinity passive — debris approaching Gojo slows exponentially (Zeno's paradox)
+- Wave system — timed enemy spawning rather than fixed initial wave
+- Anchor fragmentation — Purple hitting Anchor splits it into 3 Weak enemies
+- AbilitySystem manager — centralise ability registration and cooldown UI
