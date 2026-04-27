@@ -1,7 +1,8 @@
-#include "Constants.h"
 #include "Particle.h"
+#include "Constants.h"
 #include <random>
 #include <cstdint>
+#include <cmath>
 
 std::mt19937& prng()
 {
@@ -26,17 +27,16 @@ void Particle::respawn()
     position = { randFloat(0.f, WINDOW_WIDTH), randFloat(0.f, WINDOW_HEIGHT) };
     velocity = { randFloat(-30.f, 30.f), randFloat(-30.f, 30.f) };
     maxLifetime = randFloat(3.f, 8.f);
-    lifetime = randFloat(0.f, maxLifetime); // stagger so not all fade at once
+    lifetime = randFloat(0.f, maxLifetime);
     radius = randFloat(1.5f, 4.f);
 
     shape.setRadius(radius);
     shape.setOrigin({ radius, radius });
 
-    // mostly blue/white debris — cursed energy aesthetic
     int type = std::uniform_int_distribution<int>(0, 2)(prng());
-    if (type == 0) colour = sf::Color(100, 150, 255); // blue
-    else if (type == 1) colour = sf::Color(200, 200, 255); // white-blue
-    else colour = sf::Color(180, 100, 255); // purple
+    if (type == 0) colour = sf::Color(100, 150, 255);
+    else if (type == 1) colour = sf::Color(200, 200, 255);
+    else colour = sf::Color(180, 100, 255);
 }
 
 void Particle::update(float dt)
@@ -49,17 +49,29 @@ void Particle::update(float dt)
     }
     position += velocity * dt;
 
-    // wrap around screen edges
-    if (position.x < 0) position.x = WINDOW_WIDTH;
-    if (position.x > WINDOW_WIDTH) position.x = 0.f;
-    if (position.y < 0) position.y = WINDOW_HEIGHT;
-    if (position.y > WINDOW_HEIGHT) position.y = 0.f;
+    // cap max speed
+    float maxSpeed = 600.f;
+    float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+    if (speed > maxSpeed)
+    {
+        velocity.x = (velocity.x / speed) * maxSpeed;
+        velocity.y = (velocity.y / speed) * maxSpeed;
+    }
+
+    // respawn if too far off screen
+    float margin = 200.f;
+    if (position.x < -margin || position.x > WINDOW_WIDTH + margin ||
+        position.y < -margin || position.y > WINDOW_HEIGHT + margin)
+    {
+        respawn();
+    }
 }
 
 void Particle::draw(sf::RenderWindow& window)
 {
     float alpha = (lifetime / maxLifetime) * 255.f;
+    sf::Color drawColour = beingPulled ? sf::Color(100, 180, 255) : colour;
     shape.setPosition(position);
-    shape.setFillColor(sf::Color(colour.r, colour.g, colour.b, (uint8_t)alpha));
-    window.draw(shape, sf::BlendAdd); // additive blending for glow
+    shape.setFillColor(sf::Color(drawColour.r, drawColour.g, drawColour.b, (uint8_t)alpha));
+    window.draw(shape, sf::BlendAdd);
 }

@@ -23,8 +23,11 @@ int main()
     sf::VertexArray grid(sf::PrimitiveType::Lines);
     sf::Color gridColour(255, 255, 255, 20);
 
+    // crosshair — two lines forming a +
+    sf::VertexArray crosshair(sf::PrimitiveType::Lines, 4);
+
     // particle system
-	ParticleSystem particleSystem(300);
+	ParticleSystem particleSystem(500);
 
     for (float x = 0; x < WINDOW_WIDTH; x += GRID_SIZE)
     {
@@ -37,8 +40,15 @@ int main()
         grid.append(sf::Vertex{ {WINDOW_WIDTH, y}, gridColour });
     }
 
-    // crosshair — two lines forming a +
-    sf::VertexArray crosshair(sf::PrimitiveType::Lines, 4);
+    // Blue ability visual
+    sf::CircleShape blueRing(40.f);
+    blueRing.setOrigin({ 40.f, 40.f });
+    blueRing.setFillColor(sf::Color::Transparent);
+    blueRing.setOutlineThickness(2.f);
+    blueRing.setOutlineColor(sf::Color(100, 150, 255, 180));
+
+    float blueRingPulse = 0.f; // tracks pulse animation
+    bool blueActive = false;
 
     while (window.isOpen())
     {
@@ -76,10 +86,26 @@ int main()
         crosshair[2] = sf::Vertex{ {mouse.x, mouse.y - crossSize}, sf::Color::White };
         crosshair[3] = sf::Vertex{ {mouse.x, mouse.y + crossSize}, sf::Color::White };
 
+        // Blue ability
+        blueActive = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q);
+        if (blueActive)
+        {
+            particleSystem.applyAttraction(mouse, 80000.f);
+
+            // pulse ring size
+            blueRingPulse += dt * 3.f;
+            float pulseSize = 40.f + std::sin(blueRingPulse) * 10.f;
+            blueRing.setRadius(pulseSize);
+            blueRing.setOrigin({ pulseSize, pulseSize });
+            blueRing.setPosition(mouse);
+        }
+
         // render
         window.clear(sf::Color(5, 5, 15)); // near black with slight blue tint
         window.draw(grid);
         particleSystem.draw(window);
+        if (blueActive)
+            window.draw(blueRing, sf::BlendAdd);
         window.draw(gojo);
         window.draw(crosshair);
         window.display();

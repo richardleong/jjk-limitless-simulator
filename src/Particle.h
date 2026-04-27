@@ -11,6 +11,7 @@ public:
     float maxLifetime;
     float radius;
     sf::Color colour;
+	bool beingPulled = false; // flag to indicate if currently being pulled by Gojo's ability
 
     Particle();
     void respawn();
