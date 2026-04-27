@@ -1,6 +1,6 @@
 #include "Particle.h"
-#include "Constants.h"
-#include "Utils.h"
+#include "core/Constants.h"
+#include "core/Utils.h"
 #include <random>
 #include <cstdint>
 #include <cmath>

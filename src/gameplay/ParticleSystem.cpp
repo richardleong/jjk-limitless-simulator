@@ -1,5 +1,5 @@
 #include "ParticleSystem.h"
-#include "Utils.h"
+#include "core/Utils.h"
 #include <cmath>
 
 ParticleSystem::ParticleSystem(int count)
