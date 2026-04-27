@@ -120,6 +120,27 @@ Screen shake:     cameraOffset = random(-intensity, intensity) each frame
 Glow:             window.draw(shape, sf::BlendAdd)
 ================================================================
 
+## Layout
+src/
+├── main.cpp
+├── core/                     # engine‑ish utilities
+│   ├── Constants.h
+│   └── Utils.h / .cpp
+├── gameplay/                 # in‑world entities & their managers
+│   ├── Particle.h / .cpp
+│   ├── ParticleSystem.h / .cpp
+│   ├── Enemy.h / .cpp        (future)
+│   └── EnemyManager.h / .cpp (future)
+├── abilities/                # player abilities
+│   ├── Ability.h
+│   ├── BlueAbility.h / .cpp
+│   ├── RedAbility.h / .cpp
+│   └── PurpleAbility.h / .cpp
+└── systems/                  # world‑level services
+    ├── GameWorld.h / .cpp
+    └── ScreenShake.h / .cpp
+
+
 ## Known Improvements
 - Refactor ability systems into dedicated classes (AbilitySystem, PurpleAbility) 
   to reduce main() complexity — currently ~400 lines
