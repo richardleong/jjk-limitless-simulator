@@ -8,7 +8,11 @@ set(SFML_DIR "${CMAKE_CURRENT_SOURCE_DIR}/SFML/lib/cmake/SFML")
 
 find_package(SFML 3 COMPONENTS Graphics Window System REQUIRED)
 
-add_executable(GojoLimitlessSimulator src/main.cpp)
+add_executable(GojoLimitlessSimulator 
+    src/main.cpp
+    src/Particle.cpp
+    src/ParticleSystem.cpp
+)
 
 target_link_libraries(GojoLimitlessSimulator PRIVATE SFML::Graphics SFML::Window SFML::System)
 

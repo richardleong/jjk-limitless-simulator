@@ -1,11 +1,8 @@
+#include "Constants.h"
+#include "Particle.h"
+#include "ParticleSystem.h"
 #include <SFML/Graphics.hpp>
 #include <algorithm>
-
-const float WINDOW_WIDTH = 1280.f;
-const float WINDOW_HEIGHT = 720.f;
-const float GRID_SIZE = 80.f;
-const float GOJO_RADIUS = 30.f;
-const float GOJO_SPEED = 300.f;
 
 int main()
 {
@@ -25,6 +22,10 @@ int main()
     // precompute grid here once, before the loop
     sf::VertexArray grid(sf::PrimitiveType::Lines);
     sf::Color gridColour(255, 255, 255, 20);
+
+    // particle system
+	ParticleSystem particleSystem(300);
+
     for (float x = 0; x < WINDOW_WIDTH; x += GRID_SIZE)
     {
         grid.append(sf::Vertex{ {x, 0.f}, gridColour });
@@ -65,6 +66,8 @@ int main()
         pos.y = std::clamp(pos.y, GOJO_RADIUS, WINDOW_HEIGHT - GOJO_RADIUS);
         gojo.setPosition(pos);
 
+        particleSystem.update(dt);
+
         // update crosshair to follow mouse
         sf::Vector2f mouse = window.mapPixelToCoords(sf::Mouse::getPosition(window));
         float crossSize = 10.f;
@@ -76,6 +79,7 @@ int main()
         // render
         window.clear(sf::Color(5, 5, 15)); // near black with slight blue tint
         window.draw(grid);
+        particleSystem.draw(window);
         window.draw(gojo);
         window.draw(crosshair);
         window.display();
