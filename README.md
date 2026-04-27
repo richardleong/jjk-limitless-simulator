@@ -140,6 +140,13 @@ src/
     ├── GameWorld.h / .cpp
     └── ScreenShake.h / .cpp
 
+## Enemies
+Enemy Type	Shape	Colour	Behaviour
+Weak	Hexagon (6 sides)	Dark red	Jitters randomly, dies easily
+Basic	Pentagon (5 sides)	Red	Drifts toward Gojo
+Anchor	Octagon (8 sides) + outline	Dark purple, purple glow ring	Resists Blue, circles the map
+Blink	Diamond (4 sides)	Yellow, flickering alpha	Teleports in bursts
+
 
 ## Known Improvements
 - Refactor ability systems into dedicated classes (AbilitySystem, PurpleAbility) 

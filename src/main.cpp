@@ -73,7 +73,7 @@ int main() {
         gojo.setPosition(pos);
 
         // Update systems
-        world.update(dt);                             // particles + shake
+        world.update(dt, gojo.getPosition());
         blue.update(dt, mouse, gojo.getPosition());
         red.update(dt, mouse, gojo.getPosition());
         purple.update(dt, mouse, gojo.getPosition());

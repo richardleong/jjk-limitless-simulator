@@ -47,8 +47,9 @@ void RedAbility::update(float dt, sf::Vector2f mousePos, sf::Vector2f) {
             m_ringAlpha = 255.f;
             m_ringPrevRadius = 0.f;
             m_world.applyRepulsion(m_origin, 250000.f, 200.f);
+            m_world.redEnemyEffect(m_origin, 150.f, 200.f);  // adjusted values to match particle repulsion
             m_world.addScreenShake(25.f);
-        }
+        } 
     }
 
     // Ring expansion

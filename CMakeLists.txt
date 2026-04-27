@@ -11,6 +11,8 @@ find_package(SFML 3 COMPONENTS Graphics Window System REQUIRED)
 add_executable(GojoLimitlessSimulator 
     src/main.cpp
     src/core/Utils.cpp
+    src/gameplay/Enemy.cpp
+    src/gameplay/EnemyManager.cpp
     src/gameplay/Particle.cpp
     src/gameplay/ParticleSystem.cpp
     src/systems/GameWorld.cpp

@@ -26,14 +26,7 @@ void ParticleSystem::applyAttraction(sf::Vector2f target, float strength)
 {
     for (auto& p : particles)
     {
-        float dx = target.x - p.position.x;
-        float dy = target.y - p.position.y;
-
-        float distance = std::sqrt(dx * dx + dy * dy);
-        float force = strength / (distance * distance + 30.f); // epsilon smoothing
-
-        p.velocity.x += (dx / distance) * force;
-        p.velocity.y += (dy / distance) * force;
+        applyAttractionForce(p.velocity, p.position, target, strength, 1.f); // dt=1.f for particles since they update separately
         p.beingPulled = true;
     }
 }
@@ -48,18 +41,13 @@ void ParticleSystem::applyRepulsion(sf::Vector2f origin, float strength, float r
 
         if (distance > radius || distance < 1.f) continue;
 
-        // non-linear falloff — centre is violent, edges barely affected
-        float normalised = distance / radius; // 0.0 at centre, 1.0 at edge
-        float force = strength * std::exp(-normalised * 3.f); // exponential falloff
-
         if (distance < 20.f)
         {
             p.respawn();
             continue;
         }
 
-        p.velocity.x += (dx / distance) * force;
-        p.velocity.y += (dy / distance) * force;
+        applyRepulsionForce(p.velocity, p.position, origin, strength, radius, 1.f);
 
         // Upgrade C — break effect on impact
         p.velocity.x += randFloat(-150.f, 150.f); // random jitter
@@ -94,11 +82,11 @@ void ParticleSystem::killInRadius(sf::Vector2f origin, float radius)
 {
     for (auto& p : particles)
     {
-        float dx = p.position.x - origin.x;
-        float dy = p.position.y - origin.y;
-        float distance = std::sqrt(dx * dx + dy * dy);
-        if (distance < radius)
+        if (isInsideRadius(p.position, origin, radius))
         {
+            float dx = p.position.x - origin.x;
+            float dy = p.position.y - origin.y;
+            float distance = std::sqrt(dx * dx + dy * dy);
             // compress inward before deletion — pulls toward centre briefly
             float nx = dx / (distance + 1.f);
             float ny = dy / (distance + 1.f);

@@ -21,6 +21,11 @@ void BlueAbility::update(float dt, sf::Vector2f mousePos, sf::Vector2f) {
     if (m_active) {
         m_world.applyAttraction(mousePos, 80000.f);
 
+        // Attract enemies (low strength to let resistance work)
+        m_world.attractEnemies(mousePos, 4000.f);
+        // Apply the "obliteration" effect
+        m_world.blueEnemyEffect(mousePos, 60.f, 100.f, dt);
+
         m_pulse += dt * 3.f;
         float size = 40.f + std::sin(m_pulse) * 10.f;
         m_ring.setRadius(size);

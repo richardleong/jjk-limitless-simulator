@@ -170,6 +170,7 @@ void PurpleAbility::update(float dt, sf::Vector2f mousePos, sf::Vector2f gojoPos
         m_purpleSphere.setPosition(m_purplePos);
 
         m_world.killInRadius(m_purplePos, r);
+        m_world.purpleEnemyEffect(m_purplePos, r);
         m_world.addScreenShake(4.f);
 
         if (m_stateTimer <= 0.f)
@@ -186,6 +187,7 @@ void PurpleAbility::update(float dt, sf::Vector2f mousePos, sf::Vector2f gojoPos
         m_purpleSphere.setPosition(m_purplePos);
 
         m_world.killInRadius(m_purplePos, r);
+        m_world.purpleEnemyEffect(m_purplePos, r);
 
         if (m_purplePos.x < -m_purpleRadius * 2 || m_purplePos.x > WINDOW_WIDTH + m_purpleRadius * 2 ||
             m_purplePos.y < -m_purpleRadius * 2 || m_purplePos.y > WINDOW_HEIGHT + m_purpleRadius * 2) {
