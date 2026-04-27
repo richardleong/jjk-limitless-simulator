@@ -1,4 +1,5 @@
 #include "ParticleSystem.h"
+#include "Utils.h"
 #include <cmath>
 
 ParticleSystem::ParticleSystem(int count)
@@ -34,5 +35,57 @@ void ParticleSystem::applyAttraction(sf::Vector2f target, float strength)
         p.velocity.x += (dx / distance) * force;
         p.velocity.y += (dy / distance) * force;
         p.beingPulled = true;
+    }
+}
+
+void ParticleSystem::applyRepulsion(sf::Vector2f origin, float strength, float radius)
+{
+    for (auto& p : particles)
+    {
+        float dx = p.position.x - origin.x;
+        float dy = p.position.y - origin.y;
+        float distance = std::sqrt(dx * dx + dy * dy);
+
+        if (distance > radius || distance < 1.f) continue;
+
+        // non-linear falloff — centre is violent, edges barely affected
+        float normalised = distance / radius; // 0.0 at centre, 1.0 at edge
+        float force = strength * std::exp(-normalised * 3.f); // exponential falloff
+
+        if (distance < 20.f)
+        {
+            p.respawn();
+            continue;
+        }
+
+        p.velocity.x += (dx / distance) * force;
+        p.velocity.y += (dy / distance) * force;
+
+        // Upgrade C — break effect on impact
+        p.velocity.x += randFloat(-150.f, 150.f); // random jitter
+        p.velocity.y += randFloat(-150.f, 150.f);
+        p.colour = sf::Color(255, 80, 80); // flash red
+    }
+}
+
+void ParticleSystem::applyExpandingShockwave(sf::Vector2f origin, float currentRadius, float previousRadius, float strength)
+{
+    for (auto& p : particles)
+    {
+        float dx = p.position.x - origin.x;
+        float dy = p.position.y - origin.y;
+        float distance = std::sqrt(dx * dx + dy * dy);
+
+        // only affect particles that the ring front just passed over this frame
+        if (distance < previousRadius || distance > currentRadius) continue;
+
+        // push outward
+        float force = strength / (distance + 1.f);
+        p.velocity.x += (dx / distance) * force;
+        p.velocity.y += (dy / distance) * force;
+
+        // small jitter for tear effect
+        p.velocity.x += randFloat(-80.f, 80.f);
+        p.velocity.y += randFloat(-80.f, 80.f);
     }
 }

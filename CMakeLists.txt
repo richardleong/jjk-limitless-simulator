@@ -12,6 +12,7 @@ add_executable(GojoLimitlessSimulator
     src/main.cpp
     src/Particle.cpp
     src/ParticleSystem.cpp
+    src/Utils.cpp
 )
 
 target_link_libraries(GojoLimitlessSimulator PRIVATE SFML::Graphics SFML::Window SFML::System)
