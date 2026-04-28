@@ -103,6 +103,7 @@ cd jjk-limitless-simulator
 mkdir build && cd build
 cmake ..
 cmake --build .
+./GojoLimitlessSimulator
 ```
 
 > Requires CMake 3.22+ and a C++17 compatible compiler. MSVC recommended on Windows.
